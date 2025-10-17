@@ -448,8 +448,8 @@
             const randomY = Math.random() * 95;
             img.style.top = randomY + 'vh';
             
-            // Thời gian animation ngẫu nhiên (4-7 giây)
-            const duration = 5 + Math.random() * 3;
+            // Thời gian animation ngẫu nhiên (7-11 giây) - CHẬM HƠN
+            const duration = 7 + Math.random() * 4;
             img.style.animationDuration = duration + 's';
             
             // Shadow trắng
@@ -499,7 +499,7 @@
             img.style.top = randomY + 'vh';
             
             // Thời gian animation ngẫu nhiên (6-9 giây - CHẬM HƠN)
-            const duration = 6 + Math.random() * 3;
+            const duration = 8 + Math.random() * 3;
             img.style.animationDuration = duration + 's';
             
             // Thay đổi shadow thành màu trắng
@@ -539,18 +539,17 @@
             for (let i = 0; i < 13; i++) {
                 setTimeout(() => {
                     createRectangleImage();
-                }, i * 240);
+                }, i * 340); // Tăng delay từ 240ms lên 340ms
             }
-            setInterval(createRectangleImage, 550); // Tăng thời gian để không quá nhanh
+            setInterval(createRectangleImage, 1500); // Giảm tần xuất từ 550ms lên 785ms (30% ít hơn)
         }
-55
         function startScrollingHeartImages() {
             for (let i = 0; i < 12; i++) {
                 setTimeout(() => {
                     createScrollingHeartImage();
-                }, i * 2570);
+                }, i * 3670); // Tăng delay từ 2570ms lên 3670ms  
             }
-            setInterval(createScrollingHeartImage, 300);
+            setInterval(createScrollingHeartImage, 1000); // Giảm tần xuất từ 300ms lên 430ms (30% ít hơn)
         }
         function startContinuousFireworks() {
             createFireworks();
