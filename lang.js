@@ -1,12 +1,10 @@
-// Performance optimization: Remove preload class after DOM loads
+        // Performance optimization: Remove preload class after DOM loads
         document.addEventListener('DOMContentLoaded', () => {
             document.body.classList.remove('preload');
         });
 
         // Danh sách emoji hoa cho hiệu ứng
-        const flowers = ['🌸', '🌺', '🌼', '🌻', '🌷', '🌹', '💐', '🏵️', '🌴'];
-
-        // Optimized particle system
+        const flowers = ['🌸', '🌺', '🌼', '🌻', '🌷', '🌹', '💐', '🏵️', '🌴'];        // Optimized particle system
         class ParticleSystem {
             constructor() {
                 this.particles = [];
@@ -204,8 +202,7 @@ function appendToDisplay(value) {
             }
 
             // Hiển thị loading
-            display.disabled = true;
-            display.placeholder = 'Đang kiểm tra...';
+            showLoading();
 
             try {
                 // Gọi API để lấy password từ sheet
@@ -221,29 +218,56 @@ function appendToDisplay(value) {
                         
                         if (updateResult && updateResult.success) {
                             // Password đã được cập nhật, cho phép vào
+                            hideLoading();
                             showBirthdayScreen();
                         } else {
+                            hideLoading();
                             alert('🌸 Có lỗi xảy ra khi cập nhật mật khẩu! 🌸');
                             resetPasswordInput();
                         }
                     } 
                     // Nếu password đã tồn tại, kiểm tra
                     else if (inputPassword === String(storedPassword)) {
+                        hideLoading();
                         showBirthdayScreen();
                     } 
                     else {
                         // Password sai
+                        hideLoading();
                         showPasswordError();
                     }
                 } else {
+                    hideLoading();
                     alert('🌸 Không thể kết nối đến server! 🌸');
                     resetPasswordInput();
                 }
             } catch (error) {
                 console.error('Lỗi khi kiểm tra password:', error);
+                hideLoading();
                 alert('🌸 Có lỗi xảy ra! Vui lòng thử lại! 🌸');
                 resetPasswordInput();
             }
+        }
+
+        // Hiển thị loading spinner
+        function showLoading() {
+            const spinner = document.getElementById('loadingSpinner');
+            const buttons = document.querySelector('.buttons');
+            
+            display.disabled = true;
+            display.style.opacity = '0.6';
+            
+            if (spinner) spinner.style.display = 'flex';
+            if (buttons) buttons.style.opacity = '0.3';
+        }
+
+        // Ẩn loading spinner
+        function hideLoading() {
+            const spinner = document.getElementById('loadingSpinner');
+            const buttons = document.querySelector('.buttons');
+            
+            if (spinner) spinner.style.display = 'none';
+            if (buttons) buttons.style.opacity = '1';
         }
 
         // Hiển thị màn hình sinh nhật
@@ -284,6 +308,7 @@ function appendToDisplay(value) {
             display.placeholder = '••••••••';
             display.style.animation = '';
             display.style.borderColor = '';
+            display.style.opacity = '1';
             display.focus();
         }
 

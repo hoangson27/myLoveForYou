@@ -227,9 +227,66 @@
                 height: 100px;
             }
         }
+
+        /* Music Toggle Button */
+        .music-toggle {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .music-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 107, 157, 0.4);
+        }
+
+        .music-toggle.playing {
+            animation: musicPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes musicPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 480px) {
+            .music-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+                bottom: 20px;
+                right: 20px;
+            }
+        }
     </style>
 </head>
 <body>
+    <!-- Audio Player - Tự động phát nhạc -->
+    <audio id="bgMusic" preload="metadata" loop>
+        <source src="music/music.mp3" type="audio/mpeg">
+        <!-- Fallback cho trường hợp không hỗ trợ -->
+    </audio>
+    
+    <!-- Nút điều khiển nhạc -->
+    <button class="music-toggle" id="musicToggle" title="Bật/Tắt nhạc">
+        🔊
+    </button>
+
     <!-- Hiệu ứng pháo hoa -->
     <div class="fireworks" id="fireworks"></div>
 
@@ -238,15 +295,121 @@
 
 
     <script>
-        const heartImages = [
-            "img/gaixenh12.jpg", "img/gaixenh1.jpg", "img/gaixenh2.jpg", "img/gaixenh3.jpg", "img/gaixenh4.jpg","img/gaixenh5.jpg",
-            "img/gaixenh6.jpg", "img/gaixenh7.jpg", "img/gaixenh8.jpg", "img/gaixenh9.jpg","img/gaixenh10.jpg","img/gaixenh11.jpg",
-            "img/gaixenh12.jpg", "img/gaixenh1.jpg", "img/gaixenh2.jpg", "img/gaixenh3.jpg", "img/gaixenh4.jpg","img/gaixenh5.jpg",
-            "img/gaixenh6.jpg", "img/gaixenh7.jpg", "img/gaixenh8.jpg", "img/gaixenh9.jpg","img/gaixenh10.jpg","img/gaixenh11.jpg",
-            "img/gaixenh12.jpg", "img/gaixenh1.jpg", "img/gaixenh2.jpg", "img/gaixenh3.jpg", "img/gaixenh4.jpg","img/gaixenh5.jpg",
-            "img/gaixenh6.jpg", "img/gaixenh7.jpg", "img/gaixenh8.jpg", "img/gaixenh9.jpg","img/gaixenh10.jpg","img/gaixenh11.jpg"
-
-        ];
+        // Music Player - Tự động phát nhạc khi load trang
+        let isPlaying = false;
+        
+        function initMusicPlayer() {
+            const music = document.getElementById('bgMusic');
+            const musicToggle = document.getElementById('musicToggle');
+            
+            if (!music || !musicToggle) return;
+            
+            // Tự động phát nhạc khi trang load
+            music.play()
+                .then(() => {
+                    isPlaying = true;
+                    musicToggle.textContent = '🔊';
+                    musicToggle.classList.add('playing');
+                    console.log('✓ Nhạc sinh nhật đã tự động phát');
+                })
+                .catch((error) => {
+                    console.log('Mobile browser chặn autoplay:', error);
+                    isPlaying = false;
+                    musicToggle.textContent = '🔇';
+                    musicToggle.classList.remove('playing');
+                });
+            
+            // Toggle nhạc khi click
+            musicToggle.addEventListener('click', () => {
+                if (isPlaying) {
+                    music.pause();
+                    isPlaying = false;
+                    musicToggle.textContent = '🔇';
+                    musicToggle.classList.remove('playing');
+                } else {
+                    music.play()
+                        .then(() => {
+                            isPlaying = true;
+                            musicToggle.textContent = '🔊';
+                            musicToggle.classList.add('playing');
+                        })
+                        .catch(error => console.log('Lỗi phát nhạc:', error));
+                }
+            });
+            
+            // Giảm volume cho dễ nghe
+            music.volume = 0.4;
+        }
+        
+        // Tự động đếm số lượng ảnh trong thư mục img
+        let heartImages = [];
+        let randomHeartImages = [];
+        
+        // Hàm kiểm tra xem ảnh có tồn tại không
+        async function checkImageExists(imagePath) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = imagePath;
+            });
+        }
+        
+        // Hàm tự động load tất cả ảnh
+        async function loadAllImages() {
+            let imageIndex = 1;
+            let consecutiveFailures = 0;
+            const maxFailures = 3; // Dừng sau 3 lần thất bại liên tiếp
+            
+            while (consecutiveFailures < maxFailures) {
+                const imagePath = `img/nguoidep_${imageIndex}.png`;
+                const exists = await checkImageExists(imagePath);
+                
+                if (exists) {
+                    heartImages.push(imagePath);
+                    consecutiveFailures = 0; // Reset counter
+                    console.log(`✓ Tìm thấy: ${imagePath}`);
+                } else {
+                    consecutiveFailures++;
+                    console.log(`✗ Không tìm thấy: ${imagePath}`);
+                }
+                
+                imageIndex++;
+            }
+            
+            console.log(`📷 Tổng số ảnh tìm thấy: ${heartImages.length}`);
+            
+            // Tạo list random sau khi đã load xong
+            if (heartImages.length > 0) {
+                randomHeartImages = [
+                    ...shuffleArray(heartImages),
+                    ...shuffleArray(heartImages),
+                    ...shuffleArray(heartImages)
+                ];
+                
+                // Bắt đầu hiệu ứng sau khi load xong
+                startAllEffects();
+            } else {
+                console.error('❌ Không tìm thấy ảnh nào!');
+            }
+        }
+        
+        // Hàm random shuffle array (Fisher-Yates)
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+        
+        // Hàm khởi động tất cả hiệu ứng
+        function startAllEffects() {
+            startContinuousFireworks();
+            startScrollingHeartImages();
+            startRectangleImages();
+        }
 
         // Tạo hiệu ứng pháo hoa
         function createFireworks() {
@@ -276,8 +439,8 @@
             const container = document.getElementById('heartImagesContainer');
             const img = document.createElement('img');
             
-            // Chọn ảnh ngẫu nhiên từ danh sách
-            const randomImage = heartImages[Math.floor(Math.random() * heartImages.length)];
+            // Chọn ảnh ngẫu nhiên từ danh sách random
+            const randomImage = randomHeartImages[Math.floor(Math.random() * randomHeartImages.length)];
             img.src = randomImage;
             img.className = 'heart-img-scroll';
             
@@ -326,8 +489,8 @@
             const container = document.getElementById('heartImagesContainer');
             const img = document.createElement('img');
             
-            // Chọn ảnh ngẫu nhiên từ danh sách
-            const randomImage = heartImages[Math.floor(Math.random() * heartImages.length)];
+            // Chọn ảnh ngẫu nhiên từ danh sách random
+            const randomImage = randomHeartImages[Math.floor(Math.random() * randomHeartImages.length)];
             img.src = randomImage;
             img.className = 'heart-img-scroll';
             
@@ -402,11 +565,11 @@
 }
 
        
-        // Khởi tạo khi trang load - CẬP NHẬT
+        // Khởi tạo khi trang load - TỰ ĐỘNG ĐẾM ẢNH
         window.addEventListener('load', () => {
-            startContinuousFireworks();
-            startScrollingHeartImages(); // Ảnh hình vuông
-            startRectangleImages();      // Ảnh hình chữ nhật - THÊM MỚI
+            console.log('🚀 Đang tự động tìm kiếm ảnh...');
+            loadAllImages(); // Tự động đếm và load ảnh
+            initMusicPlayer(); // Khởi tạo music player
         });
     </script>
 </body>

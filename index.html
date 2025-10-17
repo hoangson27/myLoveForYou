@@ -17,11 +17,18 @@
         <div class="calculator-screen" id="calculatorScreen">
             <div class="input-avatar-row">
                 <div class="avatar-square">
-                    <img id="avatarImg" src="img/gaixenh.jpg" alt="Avatar" style="display:block;">
+                    <img id="avatarImg" src="img/nguoidep_19.png" alt="Avatar" style="display:block;">
+                    
+                    <!-- Loading Spinner - Dưới avatar -->
+                    <div class="loading-spinner" id="loadingSpinner" style="display: none;">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Đang kiểm tra...</div>
+                    </div>
                 </div>
                 <div class="input-and-keypad">
                     <div class="calculator-title">Nhập ngày sinh của bạn</div>
                     <input type="password" class="display" id="display" placeholder="••••••••" maxlength="8">
+                    
                     <div class="buttons">
                         <button class="btn btn-number" onclick="appendToDisplay('1')">1</button>
                         <button class="btn btn-number" onclick="appendToDisplay('2')">2</button>
@@ -55,7 +62,7 @@
                 <div class="card-3d">
                     <div class="card-imgBox">
                         <div class="card-bark"></div>
-                        <img src="img/gaixenh8.jpg" alt="Birthday">
+                        <img src="img/nguoidep_8.png" alt="Birthday">
                     </div>
                     <div class="card-details">
                         <h4>HAPPY BIRTHDAY</h4>
